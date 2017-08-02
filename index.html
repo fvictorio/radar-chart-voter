@@ -1,0 +1,93 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <title></title>
+
+  <link href="./bower_components/radar-chart-d3/src/radar-chart.css" rel="stylesheet">
+  <style>
+.radar-chart .axis .legend {
+  font-size: large;
+}
+  </style>
+</head>
+<body>
+  <div id="container">
+    <form v-if="!generated">
+      <div v-for="axis in axes">
+        <label>
+          Name
+          <input type="text" v-model="axis.axis" >
+        </label>
+        <label v-for="vote in axis.votes">
+          <input type="number" v-model="vote.value" >
+        </label>
+      </div>
+      <button type="button" @click="addRow">Add row</button>
+      <button type="submit" @click="generate">Generar</button>
+    </form>
+
+    <div class="chart-container"></div>
+  </div>
+
+  <script src="./bower_components/d3/d3.js"></script>
+  <script src="./bower_components/radar-chart-d3/src/radar-chart.js"></script>
+  <script src="https://unpkg.com/vue"></script>
+
+  <script>
+
+const setup = new Vue({
+  el: '#container',
+  data() {
+    return {
+      generated: false,
+      axes: [
+        this.emptyAxis('Motivation'),
+        this.emptyAxis('Technology'),
+        this.emptyAxis('Code Quality'),
+        this.emptyAxis('Client Satisfaction'),
+        this.emptyAxis('Velocity'),
+        this.emptyAxis('Flow'),
+        this.emptyAxis('Collaboration'),
+        this.emptyAxis('Communication'),
+        this.emptyAxis('Meetings Quality'),
+      ]
+    }
+  },
+  methods: {
+    emptyAxis(name) {
+      return { axis: name, votes: [{ value: 7 }, { value: 7 }, { value: 7 }] }
+    },
+    generate() {
+
+      this.generated = true;
+
+      const data = this.buildData()
+      console.log(JSON.stringify(data[0].axes))
+      RadarChart.draw('.chart-container', data);
+    },
+    addRow() {
+      this.axes.push(this.emptyAxis())
+    },
+    buildData() {
+      axes = this.axes
+        .map(({ axis, votes }) => {
+          return {
+            axis: axis,
+            value: votes.map(x => +x.value).reduce((a,b) => a+b, 0) / votes.length
+          }
+        })
+      return [
+        {
+          minValue: 1,
+          maxValue: 10,
+          axes
+        }
+      ]
+    }
+  }
+})
+
+  </script>
+</body>
+</html>
