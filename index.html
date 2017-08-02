@@ -64,7 +64,10 @@ const setup = new Vue({
 
       const data = this.buildData()
       console.log(JSON.stringify(data[0].axes))
-      RadarChart.draw('.chart-container', data);
+      RadarChart.draw('.chart-container', data, {
+        minValue: 0,
+        maxValue: 10
+      });
     },
     addRow() {
       this.axes.push(this.emptyAxis())
@@ -79,8 +82,6 @@ const setup = new Vue({
         })
       return [
         {
-          minValue: 1,
-          maxValue: 10,
           axes
         }
       ]
